@@ -1,0 +1,6 @@
+rootProject.name = 'ile'
+include 'core'
+findProject(':core')?.name = 'ile-core'
+include 'gui'
+findProject(':gui')?.name = 'ile-gui'
+
