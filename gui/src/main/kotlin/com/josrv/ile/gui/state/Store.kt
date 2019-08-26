@@ -1,13 +1,13 @@
 package com.josrv.ile.gui.state
 
+import com.freeletics.coredux.Reducer
 import com.freeletics.coredux.createStore
 import kotlinx.coroutines.GlobalScope
 
+typealias Store = com.freeletics.coredux.Store<IleState, IleAction>
 
-typealias Store = com.freeletics.coredux.Store<State, IleAction>
-
-fun createStore(initialState: State) =
-    GlobalScope.createStore<State, IleAction>(
+fun createStore(initialState: IleState): Store =
+    GlobalScope.createStore(
         "Ile",
         initialState,
         reducer = { currentState, newAction ->
@@ -22,25 +22,26 @@ fun createStore(initialState: State) =
         }
     )
 
-val SelectReducer: (State, IleAction.Select) -> State = { currentState, action ->
-    val tokenIndex = currentState.tokens.indexOfFirst { it.index == action.index }
-    val token = currentState.tokens[tokenIndex].copy(selected = true)
-    val newTokens = currentState.tokens.map {
-        it.copy(selected = it.index == tokenIndex)
+val SelectReducer: Reducer<IleState, IleAction.Select> =
+    { currentState, action ->
+        val token = currentState.tokens[action.index].copy(selected = true)
+        val newTokens = currentState.tokens.map {
+            it.copy(selected = it.index == action.index)
+        }
+
+        currentState.copy(tokens = newTokens.toList(), selectedToken = token)
     }
 
-    currentState.copy(tokens = newTokens.toList(), selectedToken = token)
-}
+val MoveReducer: Reducer<IleState, IleAction.Move> =
+    { currentState, action ->
+        val (tokens, selectedToken) = currentState
+        val currentIndex = selectedToken.index
+        val newIndex = if (action.forward) {
+            if (currentIndex == tokens.size - 1) currentIndex else currentIndex + 1
+        } else {
+            if (currentIndex == 0) currentIndex else currentIndex - 1
+        }
 
-val MoveReducer: (State, IleAction.Move) -> State = { currentState, action ->
-    val (tokens, selectedToken) = currentState
-    val currentIndex = selectedToken.index
-    val newIndex = if (action.forward) {
-        if (currentIndex == tokens.size - 1) currentIndex else currentIndex + 1
-    } else {
-        if (currentIndex == 0) currentIndex else currentIndex - 1
+        SelectReducer(currentState, IleAction.Select(newIndex))
     }
-
-    SelectReducer(currentState, IleAction.Select(newIndex))
-}
 

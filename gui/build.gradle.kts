@@ -19,9 +19,9 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.3.0")
-    implementation("com.freeletics.coredux:core:1.1.1")
 
     implementation(project(":ile-core"))
+    implementation(project(":conduct"))
 }
 
 tasks.withType<KotlinCompile> {

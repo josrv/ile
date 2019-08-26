@@ -1,35 +1,21 @@
 package com.josrv.ile.gui.component
 
-import com.josrv.ile.gui.Component
 import com.josrv.ile.gui.state.IleAction
-import com.josrv.ile.gui.state.State
 import com.josrv.ile.gui.state.Store
-import javafx.scene.control.Label
+import com.josrv.ile.gui.state.Token
 import javafx.scene.layout.FlowPane
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class WordPane(
+    override val store: Store,
+    tokens: Collection<Token>,
     hgap: Double, vgap: Double
-) : FlowPane(hgap, vgap), Component<State> {
-    override fun getStateSlice(state: State): State {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+) : FlowPane(hgap, vgap), IleHolder {
+
+    init {
+        children.addAll(tokens.map { token ->
+            IleLabel(token) { dispatch(IleAction.Select(token.index)) }
+        })
     }
 
-    override fun redraw(state: State): Boolean {
-        GlobalScope.launch(Dispatchers.Main) {
-            children
-                .filterIsInstance<IleLabel>()
-                .forEachIndexed() { index, label ->
-                    val token = state.tokens[index]
-
-                    if (label.redraw(token)) {
-                        children[index] = label
-                    }
-                }
-        }
-
-        return false
-    }
+    override fun children() = children.filterIsInstance<IleBlock<*>>()
 }
