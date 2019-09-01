@@ -1,6 +1,8 @@
 package com.josrv.ile.gui
 
 import com.josrv.ile.core.TextUtils
+import com.josrv.ile.gui.component.DictionaryPane
+import com.josrv.ile.gui.component.IleWorkspace
 import com.josrv.ile.gui.component.WordPane
 import com.josrv.ile.gui.component.WordScene
 import com.josrv.ile.gui.state.IleState
@@ -23,11 +25,19 @@ class IleApplication : Application() {
 
         val store = createStore(initialState)
 
-        val pane = WordPane(store, tokens, 5.0, 1.0)
-        store.subscribe { state ->
-            pane.redraw(state)
+        val wordPane = WordPane(store, tokens, 5.0, 1.0)
+        val dictionaryPane = DictionaryPane(store)
+
+        //TODO Kotlin DSL
+        val workspace = IleWorkspace(store).apply {
+            children.add(wordPane)
+            children.add(dictionaryPane)
         }
-        val scene = WordScene(store, pane)
+        store.subscribe { state ->
+            workspace.redraw(state)
+        }
+
+        val scene = WordScene(store, workspace)
         primaryStage.title = "Ile"
         primaryStage.scene = scene
         primaryStage.show()

@@ -5,6 +5,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 interface Block<in State: Any, StateSlice: Any> {
+    fun shouldRedraw(state: State): Boolean = true
+
     fun redraw(state: State) {
         GlobalScope.launch(Dispatchers.Main) {
             val stateSlice = getStateSlice(state)
@@ -12,7 +14,7 @@ interface Block<in State: Any, StateSlice: Any> {
         }
     }
 
-    fun redrawComponent(state: StateSlice) = false
+    fun redrawComponent(state: StateSlice) {}
 
     fun getStateSlice(state: State): StateSlice
 }
