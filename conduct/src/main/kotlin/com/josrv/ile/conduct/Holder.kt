@@ -2,7 +2,7 @@ package com.josrv.ile.conduct
 
 import com.freeletics.coredux.Store
 
-interface Holder<State : Any, Action : Any> : Block<State, State> {
+interface Holder<State : Any, StateSlice: Any, Action : Any> : Block<State, StateSlice> {
     val store: Store<State, Action>
 
     fun dispatch(action: Action) {
@@ -10,8 +10,6 @@ interface Holder<State : Any, Action : Any> : Block<State, State> {
     }
 
     fun children(): List<Block<State, *>>
-
-    override fun getStateSlice(state: State) = state
 
     override fun redraw(state: State) {
         children()

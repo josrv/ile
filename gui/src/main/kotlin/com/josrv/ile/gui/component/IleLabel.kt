@@ -12,9 +12,9 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 
 class IleLabel(
-    private var token: Token,
+    override var localState: Token,
     clickHandler: (MouseEvent) -> Unit
-) : Label(token.value), IleBlock<Token> {
+) : Label(localState.value), IleBlock<Token> {
 
     private val normalFont = Font.font("Nimbus Mono PS", FontWeight.SEMI_BOLD, 16.0)
     private val normalBackground = Background(BackgroundFill(Color.TRANSPARENT, null, null))
@@ -24,12 +24,12 @@ class IleLabel(
     private val selectedFont = Font.font("Nimbus Mono PS", FontWeight.BOLD, 16.0)
     private val selectedBackground = Background(BackgroundFill(Color.BLACK.also { opacity = 0.3 }, null, null))
 
-    private val setHoverState = { _: MouseEvent ->
+    private val setHoverStyle = { _: MouseEvent ->
         scene.cursor = Cursor.HAND
         background = hoverBackground
     }
 
-    private val setNormalState = { _: MouseEvent ->
+    private val setNormalStyle = { _: MouseEvent ->
         scene.cursor = Cursor.DEFAULT
         background = normalBackground
     }
@@ -37,13 +37,8 @@ class IleLabel(
     init {
         setNormalStyle()
         setOnMouseClicked(clickHandler)
-        setOnMouseEntered(setHoverState)
-        setOnMouseExited(setNormalState)
-    }
-
-    override fun shouldRedraw(state: IleState): Boolean {
-        val newToken = getStateSlice(state)
-        return token != newToken
+        setOnMouseEntered(setHoverStyle)
+        setOnMouseExited(setNormalStyle)
     }
 
     override fun redrawComponent(state: Token) {
@@ -52,12 +47,10 @@ class IleLabel(
         } else {
             setNormalStyle()
         }
-
-        token = state
     }
 
     override fun getStateSlice(state: IleState): Token {
-        return state.tokens[token.index]
+        return state.tokens[localState.index]
     }
 
     private fun setNormalStyle() {

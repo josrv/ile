@@ -1,16 +1,20 @@
 package com.josrv.ile.gui.component
 
+import com.josrv.ile.gui.Definition
+import com.josrv.ile.gui.state.IleState
 import com.josrv.ile.gui.state.Store
+import com.josrv.ile.gui.state.Token
 import javafx.scene.layout.VBox
 
 class DictionaryPane(
-    override val store: Store
-) : VBox(), IleHolder {
-
-    override fun children() = children.filterIsInstance<IleBlock<*>>()
-
+    override val store: Store,
+    override var localState: Pair<Token, List<Definition>>
+) : VBox(), IleHolder<Pair<Token, List<Definition>>> {
     init {
-        children.add(IleDictionaryInput())
-        children.add(IleDictionaryResultList())
+        children.add(IleDictionaryInput(localState = localState.first.value))
+        children.add(IleDictionaryResultList(localState = localState.second))
     }
+
+    override fun getStateSlice(state: IleState) = Pair(state.lookedUpToken, state.definitions)
+    override fun children() = children.filterIsInstance<IleBlock<*>>()
 }

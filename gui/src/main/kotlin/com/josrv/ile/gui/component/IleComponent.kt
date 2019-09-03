@@ -6,4 +6,4 @@ import com.josrv.ile.gui.state.IleAction
 import com.josrv.ile.gui.state.IleState
 
 typealias IleBlock<StateSlice> = Block<IleState, StateSlice>
-typealias IleHolder = Holder<IleState, IleAction>
+typealias IleHolder<StateSlice> = Holder<IleState, StateSlice, IleAction>

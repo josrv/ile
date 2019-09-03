@@ -10,6 +10,7 @@ import com.josrv.ile.gui.state.Token
 import com.josrv.ile.gui.state.createStore
 import javafx.application.Application
 import javafx.stage.Stage
+import kotlinx.coroutines.NonCancellable.children
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -21,15 +22,15 @@ class IleApplication : Application() {
         val tokens = textUtils.tokenize(text).mapIndexed { index, value ->
             Token(value, index == 0, index)
         }
-        val initialState = IleState(tokens, tokens.first())
+        val initialState = IleState(tokens, tokens.first(), tokens.first())
 
         val store = createStore(initialState)
 
-        val wordPane = WordPane(store, tokens, 5.0, 1.0)
-        val dictionaryPane = DictionaryPane(store)
+        val wordPane = WordPane(store, initialState.tokens, 5.0, 1.0)
+        val dictionaryPane = DictionaryPane(store, Pair(initialState.selectedToken, initialState.definitions))
 
         //TODO Kotlin DSL
-        val workspace = IleWorkspace(store).apply {
+        val workspace = IleWorkspace(store, initialState).apply {
             children.add(wordPane)
             children.add(dictionaryPane)
         }

@@ -62,7 +62,7 @@ val MoveReducer: Reducer<IleState, IleAction.Move> =
 
 val LookupResultReducer: Reducer<IleState, IleAction.LookupResult> =
     { currentState, action ->
-        currentState.copy(definitions = action.definitions)
+        currentState.copy(definitions = action.definitions, lookedUpToken = currentState.selectedToken)
     }
 
 

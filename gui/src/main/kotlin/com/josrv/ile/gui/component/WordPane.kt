@@ -8,12 +8,12 @@ import javafx.scene.layout.FlowPane
 
 class WordPane(
     override val store: Store,
-    var tokens: Collection<Token>,
+    override var localState: Collection<Token>,
     hgap: Double, vgap: Double
-) : FlowPane(hgap, vgap), IleHolder {
+) : FlowPane(hgap, vgap), IleHolder<Collection<Token>> {
 
     init {
-        children.addAll(tokens.map { token ->
+        children.addAll(localState.map { token ->
             IleLabel(token) {
                 dispatch(IleAction.Select(token.index))
                 dispatch(IleAction.Lookup)
@@ -21,14 +21,6 @@ class WordPane(
         })
     }
 
+    override fun getStateSlice(state: IleState) = state.tokens
     override fun children() = children.filterIsInstance<IleBlock<*>>()
-
-    override fun shouldRedraw(state: IleState): Boolean {
-        return tokens != state.tokens
-    }
-
-    override fun redraw(state: IleState) {
-        tokens = state.tokens
-        super.redraw(state)
-    }
 }
