@@ -13,8 +13,14 @@ class WordScene(
     init {
         setOnKeyPressed {
             when (it.code) {
-                KeyCode.J, KeyCode.RIGHT -> store.dispatch(IleAction.Move(true))
-                KeyCode.K, KeyCode.LEFT -> store.dispatch(IleAction.Move(false))
+                KeyCode.J, KeyCode.RIGHT -> {
+                    store.dispatch(IleAction.Move(true))
+                    store.dispatch(IleAction.Lookup)
+                }
+                KeyCode.K, KeyCode.LEFT -> {
+                    store.dispatch(IleAction.Move(false))
+                    store.dispatch(IleAction.Lookup)
+                }
                 else -> {
                 }
             }

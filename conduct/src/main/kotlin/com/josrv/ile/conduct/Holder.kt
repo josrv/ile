@@ -12,6 +12,7 @@ interface Holder<State : Any, StateSlice: Any, Action : Any> : Block<State, Stat
     fun children(): List<Block<State, *>>
 
     override fun redraw(state: State) {
+        localState = getStateSlice(state)
         children()
             .filter {
                 it.shouldRedraw(state)
