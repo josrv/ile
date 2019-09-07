@@ -10,7 +10,7 @@ class WordPane(
     override val store: Store,
     override var localState: Collection<Token>,
     hgap: Double, vgap: Double
-) : FlowPane(hgap, vgap), IleHolder<Collection<Token>> {
+) : FlowPane(hgap, vgap), IleHolder<Collection<Token>> {;
 
     init {
         children.addAll(localState.map { token ->
@@ -22,5 +22,5 @@ class WordPane(
     }
 
     override fun getStateSlice(state: IleState) = state.tokens
-    override fun children() = children.filterIsInstance<IleBlock<*>>()
+    override fun children() = children.asSequence().filterIsInstance<IleBlock<*>>()
 }

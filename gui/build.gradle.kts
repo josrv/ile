@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("org.openjfx.javafxplugin") version "0.0.8"
-
 }
 
 javafx {
@@ -22,6 +21,10 @@ dependencies {
 
     implementation(project(":ile-core"))
     implementation(project(":conduct"))
+
+    implementation("io.github.microutils:kotlin-logging:1.6.24")
+    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.slf4j:slf4j-api:1.7.26")
 }
 
 tasks.withType<KotlinCompile> {

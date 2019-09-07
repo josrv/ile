@@ -24,12 +24,12 @@ class IleLabel(
     private val selectedFont = Font.font("Nimbus Mono PS", FontWeight.BOLD, 16.0)
     private val selectedBackground = Background(BackgroundFill(Color.BLACK.also { opacity = 0.3 }, null, null))
 
-    private val setHoverStyle = { _: MouseEvent ->
+    private val setHoveredStyle = { _: MouseEvent ->
         scene.cursor = Cursor.HAND
         background = hoverBackground
     }
 
-    private val setNormalStyle = { _: MouseEvent ->
+    private val setNotHoveredStyle = { _: MouseEvent ->
         scene.cursor = Cursor.DEFAULT
         background = normalBackground
     }
@@ -37,8 +37,8 @@ class IleLabel(
     init {
         setNormalStyle()
         setOnMouseClicked(clickHandler)
-        setOnMouseEntered(setHoverStyle)
-        setOnMouseExited(setNormalStyle)
+        setOnMouseEntered(setHoveredStyle)
+        setOnMouseExited(setNotHoveredStyle)
     }
 
     override fun redrawComponent(state: Token) {

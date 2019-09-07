@@ -16,5 +16,5 @@ class DictionaryPane(
     }
 
     override fun getStateSlice(state: IleState) = Pair(state.lookedUpToken, state.definitions)
-    override fun children() = children.filterIsInstance<IleBlock<*>>()
+    override fun children() = children.asSequence().filterIsInstance<IleBlock<*>>()
 }

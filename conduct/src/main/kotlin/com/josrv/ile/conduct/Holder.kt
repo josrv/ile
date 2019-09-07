@@ -9,7 +9,7 @@ interface Holder<State : Any, StateSlice: Any, Action : Any> : Block<State, Stat
         store.dispatch(action)
     }
 
-    fun children(): List<Block<State, *>>
+    fun children(): Sequence<Block<State, *>>
 
     override fun redraw(state: State) {
         localState = getStateSlice(state)

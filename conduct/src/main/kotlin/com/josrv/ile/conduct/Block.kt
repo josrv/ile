@@ -3,8 +3,12 @@ package com.josrv.ile.conduct
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 interface Block<in State: Any, StateSlice: Any> {
+
     var localState: StateSlice
 
     fun shouldRedraw(state: State): Boolean {
@@ -14,7 +18,7 @@ interface Block<in State: Any, StateSlice: Any> {
     fun redraw(state: State) {
         localState = getStateSlice(state)
         GlobalScope.launch(Dispatchers.Main) {
-            println("redrawing ${this@Block}")
+            logger.debug { "redrawing ${this@Block}" }
 
             val stateSlice = getStateSlice(state)
             redrawComponent(stateSlice)

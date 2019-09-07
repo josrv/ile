@@ -9,6 +9,7 @@ import com.josrv.ile.gui.state.IleState
 import com.josrv.ile.gui.state.Token
 import com.josrv.ile.gui.state.createStore
 import javafx.application.Application
+import javafx.scene.shape.Rectangle
 import javafx.stage.Stage
 import kotlinx.coroutines.NonCancellable.children
 import java.nio.file.Files
@@ -30,10 +31,11 @@ class IleApplication : Application() {
         val dictionaryPane = DictionaryPane(store, Pair(initialState.selectedToken, initialState.definitions))
 
         //TODO Kotlin DSL
-        val workspace = IleWorkspace(store, initialState).apply {
-            children.add(wordPane)
-            children.add(dictionaryPane)
-        }
+        val workspace = IleWorkspace(store, initialState,
+            wordPane,
+            dictionaryPane
+        )
+
         store.subscribe { state ->
             workspace.redraw(state)
         }
