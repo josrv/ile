@@ -1,5 +1,8 @@
 package com.josrv.ile.gui
 
+import com.josrv.ile.gui.state.Definition
+import com.josrv.ile.gui.state.POS
+
 class StubDictionaryService : DictionaryService {
     private val definitions = mapOf(
         "have" to listOf(
@@ -9,11 +12,23 @@ class StubDictionaryService : DictionaryService {
                 POS.VERB,
                 "To be related in some way to (with the object identifying the relationship)."
             ),
-            Definition("have", POS.VERB, "To partake of a particular substance (especially a food or drink) or action.")
+            Definition(
+                "have",
+                POS.VERB,
+                "To partake of a particular substance (especially a food or drink) or action."
+            )
         ),
         "human" to listOf(
-            Definition("human", POS.NOUN, "A human being, whether man, woman or child."),
-            Definition("human", POS.ADJECTIVE, "Of or belonging to the species Homo sapiens or its closest relatives. ")
+            Definition(
+                "human",
+                POS.NOUN,
+                "A human being, whether man, woman or child."
+            ),
+            Definition(
+                "human",
+                POS.ADJECTIVE,
+                "Of or belonging to the species Homo sapiens or its closest relatives. "
+            )
         )
     )
 

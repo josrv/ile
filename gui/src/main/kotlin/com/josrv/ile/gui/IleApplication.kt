@@ -1,37 +1,44 @@
 package com.josrv.ile.gui
 
 import com.josrv.ile.core.TextUtils
-import com.josrv.ile.gui.component.DictionaryPane
-import com.josrv.ile.gui.component.IleWorkspace
-import com.josrv.ile.gui.component.WordPane
-import com.josrv.ile.gui.component.WordScene
-import com.josrv.ile.gui.state.IleState
-import com.josrv.ile.gui.state.Token
-import com.josrv.ile.gui.state.createStore
+import com.josrv.ile.gui.component.*
+import com.josrv.ile.gui.state.*
 import javafx.application.Application
-import javafx.scene.shape.Rectangle
+import javafx.stage.FileChooser
 import javafx.stage.Stage
-import kotlinx.coroutines.NonCancellable.children
 import java.nio.file.Files
 import java.nio.file.Paths
 
 class IleApplication : Application() {
 
     override fun start(primaryStage: Stage) {
-        val text = Files.readString(Paths.get("text.txt")).replace("\n", "")
+        val path = Paths.get("text.txt")
+        val textString = Files.readString(path)
         val textUtils = TextUtils()
-        val tokens = textUtils.tokenize(text).mapIndexed { index, value ->
+        val tokens = textUtils.tokenize(textString).mapIndexed { index, value ->
             Token(value, index == 0, index)
         }
-        val initialState = IleState(tokens, tokens.first(), tokens.first())
+        val page = Page(1, tokens)
+        val text = Text(TextId.new(), path, listOf(page))
+        val initialState = IleState(
+            text,
+            page,
+            tokens.first(),
+            tokens.first(),
+            texts = listOf(text)
+        )
 
         val store = createStore(initialState)
 
-        val wordPane = WordPane(store, initialState.tokens, 5.0, 1.0)
+        val textsList = TextsList(initialState.texts, onItemSelected = {
+            store.dispatch(IleAction.SelectText(it))
+        })
+        val wordPane = WordPane(store, page, 5.0, 1.0)
         val dictionaryPane = DictionaryPane(store, Pair(initialState.selectedToken, initialState.definitions))
 
-        //TODO Kotlin DSL
+//        TODO Kotlin DSL
         val workspace = IleWorkspace(store, initialState,
+            textsList,
             wordPane,
             dictionaryPane
         )
@@ -40,7 +47,7 @@ class IleApplication : Application() {
             workspace.redraw(state)
         }
 
-        val scene = WordScene(store, workspace)
+        val scene = WordScene(store, primaryStage, workspace)
         primaryStage.title = "Ile"
         primaryStage.scene = scene
         primaryStage.show()

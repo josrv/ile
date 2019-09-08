@@ -1,19 +1,16 @@
 package com.josrv.ile.gui.component
 
-import com.josrv.ile.gui.state.IleAction
-import com.josrv.ile.gui.state.IleState
-import com.josrv.ile.gui.state.Store
-import com.josrv.ile.gui.state.Token
+import com.josrv.ile.gui.state.*
 import javafx.scene.layout.FlowPane
 
 class WordPane(
     override val store: Store,
-    override var localState: Collection<Token>,
+    override var localState: Page,
     hgap: Double, vgap: Double
-) : FlowPane(hgap, vgap), IleHolder<Collection<Token>> {;
+) : FlowPane(hgap, vgap), IleHolder<Page> {
 
     init {
-        children.addAll(localState.map { token ->
+        children.addAll(localState.tokens.map { token ->
             IleLabel(token) {
                 dispatch(IleAction.Select(token.index))
                 dispatch(IleAction.Lookup)
@@ -21,6 +18,6 @@ class WordPane(
         })
     }
 
-    override fun getStateSlice(state: IleState) = state.tokens
+    override fun getStateSlice(state: IleState) = state.page
     override fun children() = children.asSequence().filterIsInstance<IleBlock<*>>()
 }

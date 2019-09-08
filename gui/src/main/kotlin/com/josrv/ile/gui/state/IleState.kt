@@ -1,10 +1,16 @@
 package com.josrv.ile.gui.state
 
-import com.josrv.ile.gui.Definition
-
+//TODO should be no nulls here
 data class IleState(
-    val tokens: List<Token>,
+    val text: Text,
+    val page: Page,
+
     val selectedToken: Token,
     val lookedUpToken: Token,
-    val definitions: List<Definition> = listOf()
+    val definitions: List<Definition> = listOf(),
+
+    val texts: List<Text> = emptyList(),
+
+    val openingFile: Boolean = false,
+    val loadingFile: Boolean = false
 )

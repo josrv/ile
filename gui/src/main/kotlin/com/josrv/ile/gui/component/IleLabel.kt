@@ -50,7 +50,7 @@ class IleLabel(
     }
 
     override fun getStateSlice(state: IleState): Token {
-        return state.tokens[localState.index]
+        return state.page.tokens[localState.index]
     }
 
     private fun setNormalStyle() {
