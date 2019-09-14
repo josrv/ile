@@ -1,6 +1,5 @@
-package com.josrv.ile.gui
+package com.josrv.ile.common
 
-import com.josrv.ile.gui.state.Definition
 
 interface DictionaryService {
     fun lookup(word: String): List<Definition>

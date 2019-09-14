@@ -1,5 +1,6 @@
 package com.josrv.ile.gui.state
 
+import com.josrv.ile.common.Definition
 import java.nio.file.Path
 
 sealed class IleAction {

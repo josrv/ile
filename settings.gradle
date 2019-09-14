@@ -4,4 +4,6 @@ findProject(':core')?.name = 'ile-core'
 include 'gui'
 findProject(':gui')?.name = 'ile-gui'
 include 'conduct'
+include 'ile-dictionary'
+include 'common'
 

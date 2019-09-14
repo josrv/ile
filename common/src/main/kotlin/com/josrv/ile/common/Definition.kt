@@ -1,4 +1,4 @@
-package com.josrv.ile.gui.state
+package com.josrv.ile.common
 
 data class Definition(
     val word: String,

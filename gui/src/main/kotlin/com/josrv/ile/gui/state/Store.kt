@@ -1,21 +1,21 @@
 package com.josrv.ile.gui.state
 
-import com.freeletics.coredux.*
-import com.josrv.ile.core.TextUtils
-import com.josrv.ile.gui.DictionaryService
-import com.josrv.ile.gui.StubDictionaryService
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
-import java.nio.file.Files
+import com.freeletics.coredux.Reducer
+import com.freeletics.coredux.createStore
+import kotlinx.coroutines.GlobalScope
 
 typealias Store = com.freeletics.coredux.Store<IleState, IleAction>
+typealias SideEffect = com.freeletics.coredux.SideEffect<IleState, IleAction>
 
-fun createStore(initialState: IleState): Store =
+fun createStore(
+    initialState: IleState,
+    dictionaryLookup: SideEffect,
+    loadFile: SideEffect
+): Store =
     GlobalScope.createStore(
         name = "Ile",
         initialState = initialState,
-        sideEffects = listOf(lookup, loadFile),
+        sideEffects = listOf(dictionaryLookup, loadFile),
         reducer = { currentState, newAction ->
             when (newAction) {
                 is IleAction.Select -> SelectReducer(currentState, newAction)
@@ -73,45 +73,3 @@ val SelectTextReducer: Reducer<IleState, IleAction.SelectText> =
     { currentState, action ->
         currentState.copy(text = action.text, page = action.text.pages[0])
     }
-
-
-val dictionaryService: DictionaryService = StubDictionaryService()
-
-val lookup = SimpleSideEffect<IleState, IleAction>("lookup") { state, action, logger, handler ->
-    when (action) {
-        is IleAction.Lookup -> handler {
-            val selectedToken = state().selectedToken
-            val definitions = dictionaryService.lookup(selectedToken.value)
-            IleAction.LookupResult(definitions)
-        }
-        else -> null
-    }
-}
-
-val textUtils = TextUtils()
-
-val loadFile = object : SideEffect<IleState, IleAction> {
-    override val name = "lookup"
-
-    override fun CoroutineScope.start(
-        input: ReceiveChannel<IleAction>,
-        stateAccessor: StateAccessor<IleState>,
-        output: SendChannel<IleAction>,
-        logger: SideEffectLogger
-    ): Job = launch {
-        for (action in input) {
-            if (action is IleAction.FileOpened) {
-                launch(Dispatchers.IO) {
-                    val textContent = Files.readString(action.file)
-                    val page = Page.new(
-                        num = 1,
-                        tokens = textUtils.tokenize(textContent).mapIndexed { index, s -> Token(s, false, index) }
-                    )
-                    val newText = Text(TextId.new(), action.file, action.file.fileName.toString(), listOf(page))
-                    output.send(IleAction.FileLoaded(action.file, newText))
-                    output.send(IleAction.SelectText(newText))
-                }
-            }
-        }
-    }
-}

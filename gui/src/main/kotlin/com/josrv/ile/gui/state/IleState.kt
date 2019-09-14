@@ -1,5 +1,7 @@
 package com.josrv.ile.gui.state
 
+import com.josrv.ile.common.Definition
+
 data class IleState(
     val text: Text,
     val page: Page,

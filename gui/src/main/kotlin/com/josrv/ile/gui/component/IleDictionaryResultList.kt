@@ -1,6 +1,6 @@
 package com.josrv.ile.gui.component
 
-import com.josrv.ile.gui.state.Definition
+import com.josrv.ile.common.Definition
 import com.josrv.ile.gui.state.IleState
 import javafx.scene.control.ListView
 

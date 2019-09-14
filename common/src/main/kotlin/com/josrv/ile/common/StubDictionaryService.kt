@@ -1,7 +1,5 @@
-package com.josrv.ile.gui
+package com.josrv.ile.common
 
-import com.josrv.ile.gui.state.Definition
-import com.josrv.ile.gui.state.POS
 
 class StubDictionaryService : DictionaryService {
     private val definitions = mapOf(
