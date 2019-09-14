@@ -17,13 +17,14 @@ class WordScene(
         val fileChooser = FileChooser()
         setOnKeyPressed {
 
-            if (it.isControlDown && it.code == KeyCode.O) {
-//                store.dispatch(IleAction.OpenFile)
-                val file = fileChooser.showOpenDialog(stage).toPath()
-                store.dispatch(IleAction.FileOpened(file))
-            }
-
             when (it.code) {
+                KeyCode.O -> {
+                    if (it.isControlDown) {
+                        fileChooser.showOpenDialog(stage)?.toPath()?.apply {
+                            store.dispatch(IleAction.FileOpened(this))
+                        }
+                    }
+                }
                 KeyCode.J, KeyCode.RIGHT -> {
                     store.dispatch(IleAction.Move(true))
                     store.dispatch(IleAction.Lookup)

@@ -1,6 +1,5 @@
 package com.josrv.ile.gui.state
 
-//TODO should be no nulls here
 data class IleState(
     val text: Text,
     val page: Page,

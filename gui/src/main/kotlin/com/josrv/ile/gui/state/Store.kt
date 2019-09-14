@@ -4,7 +4,6 @@ import com.freeletics.coredux.*
 import com.josrv.ile.core.TextUtils
 import com.josrv.ile.gui.DictionaryService
 import com.josrv.ile.gui.StubDictionaryService
-import com.josrv.ile.gui.TextId
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -28,14 +27,14 @@ fun createStore(initialState: IleState): Store =
                 is IleAction.LookupResult -> {
                     LookupResultReducer(currentState, newAction)
                 }
-                is IleAction.OpenFile -> {
-                    OpenFileReducer(currentState, newAction)
-                }
                 is IleAction.FileOpened -> {
                     FileOpenedReducer(currentState, newAction)
                 }
                 is IleAction.FileLoaded -> {
                     FileLoadedReducer(currentState, newAction)
+                }
+                is IleAction.SelectText -> {
+                    SelectTextReducer(currentState, newAction)
                 }
                 else -> {
                     NoOpReducer(currentState, newAction)
@@ -74,11 +73,6 @@ val LookupResultReducer: Reducer<IleState, IleAction.LookupResult> =
         currentState.copy(definitions = action.definitions, lookedUpToken = currentState.selectedToken)
     }
 
-val OpenFileReducer: Reducer<IleState, IleAction.OpenFile> =
-    { currentState, action ->
-        currentState.copy(openingFile = true)
-    }
-
 val FileOpenedReducer: Reducer<IleState, IleAction.FileOpened> =
     { currentState, action ->
         currentState.copy(openingFile = false, loadingFile = true)
@@ -86,8 +80,12 @@ val FileOpenedReducer: Reducer<IleState, IleAction.FileOpened> =
 
 val FileLoadedReducer: Reducer<IleState, IleAction.FileLoaded> =
     { currentState, action ->
-        val newText = Text(TextId.new(), action.file, action.pages)
-        currentState.copy(loadingFile = false, texts = currentState.texts + newText)
+        currentState.copy(loadingFile = false, texts = currentState.texts + action.text)
+    }
+
+val SelectTextReducer: Reducer<IleState, IleAction.SelectText> =
+    { currentState, action ->
+        currentState.copy(text = action.text, page = action.text.pages[0])
     }
 
 
@@ -118,12 +116,14 @@ val loadFile = object : SideEffect<IleState, IleAction> {
         for (action in input) {
             when (action) {
                 is IleAction.FileOpened -> launch(Dispatchers.IO) {
-                    val text = Files.readString(action.file)
-                    val page = Page(
+                    val textContent = Files.readString(action.file)
+                    val page = Page.new(
                         num = 1,
-                        tokens = textUtils.tokenize(text).mapIndexed { index, s -> Token(s, false, index) }
+                        tokens = textUtils.tokenize(textContent).mapIndexed { index, s -> Token(s, false, index) }
                     )
-                    output.send(IleAction.FileLoaded(action.file, listOf(page)))
+                    val newText = Text(TextId.new(), action.file, action.file.fileName.toString(), listOf(page))
+                    output.send(IleAction.FileLoaded(action.file, newText))
+                    output.send(IleAction.SelectText(newText))
                 }
                 else -> {
                 }

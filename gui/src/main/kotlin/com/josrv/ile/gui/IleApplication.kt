@@ -4,7 +4,6 @@ import com.josrv.ile.core.TextUtils
 import com.josrv.ile.gui.component.*
 import com.josrv.ile.gui.state.*
 import javafx.application.Application
-import javafx.stage.FileChooser
 import javafx.stage.Stage
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -12,14 +11,14 @@ import java.nio.file.Paths
 class IleApplication : Application() {
 
     override fun start(primaryStage: Stage) {
-        val path = Paths.get("text.txt")
+        val path = Paths.get("kaczynski.txt")
         val textString = Files.readString(path)
         val textUtils = TextUtils()
         val tokens = textUtils.tokenize(textString).mapIndexed { index, value ->
             Token(value, index == 0, index)
         }
-        val page = Page(1, tokens)
-        val text = Text(TextId.new(), path, listOf(page))
+        val page = Page(PageId.new(), 1, tokens)
+        val text = Text(TextId.new(), path, "manifesto", listOf(page))
         val initialState = IleState(
             text,
             page,
@@ -36,7 +35,6 @@ class IleApplication : Application() {
         val wordPane = WordPane(store, page, 5.0, 1.0)
         val dictionaryPane = DictionaryPane(store, Pair(initialState.selectedToken, initialState.definitions))
 
-//        TODO Kotlin DSL
         val workspace = IleWorkspace(store, initialState,
             textsList,
             wordPane,

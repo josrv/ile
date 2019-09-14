@@ -4,6 +4,7 @@ import com.josrv.ile.gui.state.Definition
 import com.josrv.ile.gui.state.IleState
 import com.josrv.ile.gui.state.Store
 import com.josrv.ile.gui.state.Token
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 
 class DictionaryPane(
@@ -12,7 +13,9 @@ class DictionaryPane(
 ) : VBox(), IleHolder<Pair<Token, List<Definition>>> {
     init {
         children.add(IleDictionaryInput(localState = localState.first.value))
-        children.add(IleDictionaryResultList(localState = localState.second))
+        children.add(IleDictionaryResultList(localState = localState.second).apply {
+            setVgrow(this, Priority.ALWAYS)
+        })
     }
 
     override fun getStateSlice(state: IleState) = Pair(state.lookedUpToken, state.definitions)
