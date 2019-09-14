@@ -11,12 +11,14 @@ data class Text(
 ) {
     companion object {
         fun new(file: Path, title: String, pages: List<Page>) = Text(TextId.new(), file, title, pages)
+        fun empty() = Text(TextId.empty(), Path.of("nonexistent"), "Empty", listOf(Page.empty()))
     }
 }
 
 inline class TextId(val id: String) {
     companion object {
         fun new() = TextId(UUID.randomUUID().toString())
+        fun empty() = TextId("EMPTY")
     }
 }
 
@@ -27,11 +29,13 @@ data class Page(
 ) {
     companion object {
         fun new(num: Int, tokens: List<Token>) = Page(PageId.new(), num, tokens)
+        fun empty() = Page(PageId.empty(), 1, emptyList())
     }
 }
 
 inline class PageId(val id: String) {
     companion object {
         fun new() = PageId(UUID.randomUUID().toString())
+        fun empty() = PageId("EMPTY")
     }
 }

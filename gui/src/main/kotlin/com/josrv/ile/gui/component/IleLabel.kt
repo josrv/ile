@@ -17,12 +17,9 @@ class IleLabel(
 ) : Label(localState.value), IleBlock<Token> {
 
     private val normalFont = Font.font("Nimbus Mono PS", FontWeight.SEMI_BOLD, 16.0)
-    private val normalBackground = Background(BackgroundFill(Color.TRANSPARENT, null, null))
-
-    private val hoverBackground = Background(BackgroundFill(Color.rgb(0, 0, 0, 0.1), null, null))
-
     private val selectedFont = Font.font("Nimbus Mono PS", FontWeight.BOLD, 16.0)
-    private val selectedBackground = Background(BackgroundFill(Color.BLACK.also { opacity = 0.3 }, null, null))
+    private val normalBackground = Background(BackgroundFill(Color.TRANSPARENT, null, null))
+    private val hoverBackground = Background(BackgroundFill(Color.rgb(0, 0, 0, 0.1), null, null))
 
     private val setHoveredStyle = { _: MouseEvent ->
         scene.cursor = Cursor.HAND

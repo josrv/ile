@@ -5,9 +5,7 @@ import com.freeletics.coredux.Store
 interface Holder<State : Any, StateSlice: Any, Action : Any> : Block<State, StateSlice> {
     val store: Store<State, Action>
 
-    fun dispatch(action: Action) {
-        store.dispatch(action)
-    }
+    fun dispatch(action: Action) = store.dispatch(action)
 
     fun children(): Sequence<Block<State, *>>
 

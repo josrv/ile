@@ -18,32 +18,18 @@ fun createStore(initialState: IleState): Store =
         sideEffects = listOf(lookup, loadFile),
         reducer = { currentState, newAction ->
             when (newAction) {
-                is IleAction.Select -> {
-                    SelectReducer(currentState, newAction)
-                }
-                is IleAction.Move -> {
-                    MoveReducer(currentState, newAction)
-                }
-                is IleAction.LookupResult -> {
-                    LookupResultReducer(currentState, newAction)
-                }
-                is IleAction.FileOpened -> {
-                    FileOpenedReducer(currentState, newAction)
-                }
-                is IleAction.FileLoaded -> {
-                    FileLoadedReducer(currentState, newAction)
-                }
-                is IleAction.SelectText -> {
-                    SelectTextReducer(currentState, newAction)
-                }
-                else -> {
-                    NoOpReducer(currentState, newAction)
-                }
+                is IleAction.Select -> SelectReducer(currentState, newAction)
+                is IleAction.Move -> MoveReducer(currentState, newAction)
+                is IleAction.LookupResult -> LookupResultReducer(currentState, newAction)
+                is IleAction.FileOpened -> FileOpenedReducer(currentState, newAction)
+                is IleAction.FileLoaded -> FileLoadedReducer(currentState, newAction)
+                is IleAction.SelectText -> SelectTextReducer(currentState, newAction)
+                else -> NoOpReducer(currentState, newAction)
             }
         }
     )
 
-val NoOpReducer: Reducer<IleState, IleAction> = { state, _ -> state }
+val NoOpReducer: Reducer<IleState, in IleAction> = { state, _ -> state }
 
 val SelectReducer: Reducer<IleState, IleAction.Select> =
     { currentState, action ->
@@ -74,8 +60,8 @@ val LookupResultReducer: Reducer<IleState, IleAction.LookupResult> =
     }
 
 val FileOpenedReducer: Reducer<IleState, IleAction.FileOpened> =
-    { currentState, action ->
-        currentState.copy(openingFile = false, loadingFile = true)
+    { currentState, _ ->
+        currentState.copy(loadingFile = true)
     }
 
 val FileLoadedReducer: Reducer<IleState, IleAction.FileLoaded> =
@@ -114,8 +100,8 @@ val loadFile = object : SideEffect<IleState, IleAction> {
         logger: SideEffectLogger
     ): Job = launch {
         for (action in input) {
-            when (action) {
-                is IleAction.FileOpened -> launch(Dispatchers.IO) {
+            if (action is IleAction.FileOpened) {
+                launch(Dispatchers.IO) {
                     val textContent = Files.readString(action.file)
                     val page = Page.new(
                         num = 1,
@@ -124,8 +110,6 @@ val loadFile = object : SideEffect<IleState, IleAction> {
                     val newText = Text(TextId.new(), action.file, action.file.fileName.toString(), listOf(page))
                     output.send(IleAction.FileLoaded(action.file, newText))
                     output.send(IleAction.SelectText(newText))
-                }
-                else -> {
                 }
             }
         }

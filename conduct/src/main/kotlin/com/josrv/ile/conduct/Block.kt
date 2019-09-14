@@ -11,9 +11,7 @@ interface Block<in State: Any, StateSlice: Any> {
 
     var localState: StateSlice
 
-    fun shouldRedraw(state: State): Boolean {
-        return getStateSlice(state) != localState
-    }
+    fun shouldRedraw(state: State) = getStateSlice(state) != localState
 
     fun redraw(state: State) {
         localState = getStateSlice(state)
@@ -22,6 +20,7 @@ interface Block<in State: Any, StateSlice: Any> {
 
             val stateSlice = getStateSlice(state)
             redrawComponent(stateSlice)
+
         }
     }
 

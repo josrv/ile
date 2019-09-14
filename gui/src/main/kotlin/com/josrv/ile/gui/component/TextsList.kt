@@ -9,6 +9,7 @@ class TextsList(
     override var localState: List<Text>,
     onItemSelected: (Text) -> Unit
 ) : ListView<Text>(), IleBlock<List<Text>> {
+
     init {
         selectionModel.selectedItemProperty().addListener { o, old, new ->
             onItemSelected(new)
