@@ -1,7 +1,7 @@
 package com.josrv.ile.gui.component
 
 import com.josrv.ile.gui.state.IleState
-import com.josrv.ile.gui.state.Text
+import com.josrv.ile.gui.state.data.Text
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 

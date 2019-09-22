@@ -1,4 +1,4 @@
-package com.josrv.ile.gui.state
+package com.josrv.ile.gui.state.data
 
 import java.nio.file.Path
 import java.util.*
@@ -10,8 +10,14 @@ data class Text(
     val pages: List<Page>
 ) {
     companion object {
-        fun new(file: Path, title: String, pages: List<Page>) = Text(TextId.new(), file, title, pages)
-        fun empty() = Text(TextId.empty(), Path.of("nonexistent"), "Empty", listOf(Page.empty()))
+        fun new(file: Path, title: String, pages: List<Page>) =
+            Text(TextId.new(), file, title, pages)
+        fun empty() = Text(
+            TextId.empty(),
+            Path.of("nonexistent"),
+            "Empty",
+            listOf(Page.empty())
+        )
     }
 }
 
@@ -28,8 +34,10 @@ data class Page(
     val tokens: List<Token>
 ) {
     companion object {
-        fun new(num: Int, tokens: List<Token>) = Page(PageId.new(), num, tokens)
-        fun empty() = Page(PageId.empty(), 1, emptyList())
+        fun new(num: Int, tokens: List<Token>) =
+            Page(PageId.new(), num, tokens)
+        fun empty() =
+            Page(PageId.empty(), 1, emptyList())
     }
 }
 

@@ -1,11 +1,13 @@
 package com.josrv.ile.gui
 
-import com.josrv.ile.common.DictionaryService
 import com.josrv.ile.core.TextUtils
+import com.josrv.ile.gui.service.DictionaryService
+import com.josrv.ile.gui.service.DictionaryServiceImpl
 import com.josrv.ile.gui.state.IleState
 import com.josrv.ile.gui.state.createStore
 import com.josrv.ile.gui.state.sideeffect.DictionaryLookup
 import com.josrv.ile.gui.state.sideeffect.LoadFile
+import com.josrv.ile.messaging.MessagingClient
 import com.natpryce.konfig.Configuration
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -14,8 +16,11 @@ val Module = { config: Configuration ->
     module(createdAtStart = true) {
 
         single() {
-            val dictionaryServiceClass = Class.forName(config[dictionary.serviceClass])
-            dictionaryServiceClass.getDeclaredConstructor().newInstance() as DictionaryService
+            val messagingClient = config[messaging.clientClass].getDeclaredConstructor().newInstance() as MessagingClient
+
+            messagingClient.connect(config[messaging.uri])
+
+            messagingClient
         }
 
         single() {
@@ -30,12 +35,16 @@ val Module = { config: Configuration ->
             LoadFile(get())
         }
 
-        single() {
-           IleState.initial()
+        single<DictionaryService>() {
+            DictionaryServiceImpl(get())
         }
 
         single() {
-            createStore(get(), get(named("dictionaryLookup")), get(named("loadFile")))
+            IleState.initial()
+        }
+
+        single() {
+            createStore(get(), get(named("dictionaryLookup")), get(named("loadFile")), get())
         }
     }
 }

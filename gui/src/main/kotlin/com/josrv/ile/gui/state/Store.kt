@@ -2,6 +2,9 @@ package com.josrv.ile.gui.state
 
 import com.freeletics.coredux.Reducer
 import com.freeletics.coredux.createStore
+import com.josrv.ile.common.msg.Definitions
+import com.josrv.ile.gui.state.data.Definition
+import com.josrv.ile.messaging.MessagingClient
 import kotlinx.coroutines.GlobalScope
 
 typealias Store = com.freeletics.coredux.Store<IleState, IleAction>
@@ -10,7 +13,8 @@ typealias SideEffect = com.freeletics.coredux.SideEffect<IleState, IleAction>
 fun createStore(
     initialState: IleState,
     dictionaryLookup: SideEffect,
-    loadFile: SideEffect
+    loadFile: SideEffect,
+    messagingClient: MessagingClient
 ): Store =
     GlobalScope.createStore(
         name = "Ile",
@@ -24,10 +28,20 @@ fun createStore(
                 is IleAction.FileOpened -> FileOpenedReducer(currentState, newAction)
                 is IleAction.FileLoaded -> FileLoadedReducer(currentState, newAction)
                 is IleAction.SelectText -> SelectTextReducer(currentState, newAction)
+                is IleAction.LoadingDefinition -> LoadingDefinitionReducer(currentState, newAction)
                 else -> NoOpReducer(currentState, newAction)
             }
         }
-    )
+    ).apply {
+        //TODO find a better place for this
+        messagingClient.registerReceiver(Definitions.config) { (value) ->
+            val definitions = value.map {
+                Definition(it.word, it.pos, it.value)
+            }
+
+            dispatch(IleAction.LookupResult(definitions))
+        }
+    }
 
 val NoOpReducer: Reducer<IleState, in IleAction> = { state, _ -> state }
 
@@ -56,7 +70,11 @@ val MoveReducer: Reducer<IleState, IleAction.Move> =
 
 val LookupResultReducer: Reducer<IleState, IleAction.LookupResult> =
     { currentState, action ->
-        currentState.copy(definitions = action.definitions, lookedUpToken = currentState.selectedToken)
+        currentState.copy(
+            loadingDefinition = false,
+            definitions = action.definitions,
+            lookedUpToken = currentState.selectedToken
+        )
     }
 
 val FileOpenedReducer: Reducer<IleState, IleAction.FileOpened> =
@@ -72,4 +90,9 @@ val FileLoadedReducer: Reducer<IleState, IleAction.FileLoaded> =
 val SelectTextReducer: Reducer<IleState, IleAction.SelectText> =
     { currentState, action ->
         currentState.copy(text = action.text, page = action.text.pages[0])
+    }
+
+val LoadingDefinitionReducer: Reducer<IleState, IleAction.LoadingDefinition> =
+    { currentState, action ->
+        currentState.copy(loadingDefinition = true)
     }

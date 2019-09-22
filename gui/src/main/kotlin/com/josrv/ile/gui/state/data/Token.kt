@@ -1,4 +1,4 @@
-package com.josrv.ile.gui.state
+package com.josrv.ile.gui.state.data
 
 data class Token(
     val value: String,

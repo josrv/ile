@@ -1,7 +1,7 @@
 package com.josrv.ile.gui.component
 
 import com.josrv.ile.gui.state.IleState
-import com.josrv.ile.gui.state.Token
+import com.josrv.ile.gui.state.data.Token
 import javafx.scene.Cursor
 import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent

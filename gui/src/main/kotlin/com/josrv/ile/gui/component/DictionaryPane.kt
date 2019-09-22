@@ -1,9 +1,9 @@
 package com.josrv.ile.gui.component
 
-import com.josrv.ile.common.Definition
+import com.josrv.ile.gui.state.data.Definition
 import com.josrv.ile.gui.state.IleState
 import com.josrv.ile.gui.state.Store
-import com.josrv.ile.gui.state.Token
+import com.josrv.ile.gui.state.data.Token
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 

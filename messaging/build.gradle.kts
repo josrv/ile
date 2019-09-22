@@ -10,6 +10,8 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("com.rabbitmq:amqp-client:5.7.3")
+    implementation(project(":common"))
 }
 
 tasks.withType<KotlinCompile> {

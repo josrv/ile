@@ -1,6 +1,8 @@
 package com.josrv.ile.gui.component
 
 import com.josrv.ile.gui.state.*
+import com.josrv.ile.gui.state.data.Page
+import com.josrv.ile.gui.state.data.Token
 import javafx.geometry.Insets
 import javafx.scene.control.ScrollPane
 import javafx.scene.input.MouseEvent

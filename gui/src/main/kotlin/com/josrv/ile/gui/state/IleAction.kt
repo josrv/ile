@@ -1,6 +1,7 @@
 package com.josrv.ile.gui.state
 
-import com.josrv.ile.common.Definition
+import com.josrv.ile.gui.state.data.Definition
+import com.josrv.ile.gui.state.data.Text
 import java.nio.file.Path
 
 sealed class IleAction {
@@ -12,6 +13,7 @@ sealed class IleAction {
 
     data class SelectText(val text: Text) : IleAction()
 
-    data class LookupResult(val definitions: List<Definition>) : IleAction()
     object Lookup : IleAction()
+    object LoadingDefinition : IleAction()
+    data class LookupResult(val definitions: List<Definition>) : IleAction()
 }

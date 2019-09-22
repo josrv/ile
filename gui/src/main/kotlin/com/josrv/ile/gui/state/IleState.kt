@@ -1,6 +1,9 @@
 package com.josrv.ile.gui.state
 
-import com.josrv.ile.common.Definition
+import com.josrv.ile.gui.state.data.Definition
+import com.josrv.ile.gui.state.data.Page
+import com.josrv.ile.gui.state.data.Text
+import com.josrv.ile.gui.state.data.Token
 
 data class IleState(
     val text: Text,
@@ -10,6 +13,7 @@ data class IleState(
 
     val lookedUpToken: Token,
     val definitions: List<Definition> = listOf(),
+    val loadingDefinition: Boolean = false,
 
     val texts: List<Text> = emptyList(),
 

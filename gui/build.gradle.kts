@@ -20,6 +20,7 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.13.0")
 
     implementation("org.koin:koin-core:2.0.1")
     implementation("com.natpryce:konfig:1.6.10.0")
@@ -27,7 +28,7 @@ dependencies {
     implementation(project(":ile-core"))
     implementation(project(":common"))
     implementation(project(":conduct"))
-    implementation(project(":ile-dictionary"))
+    implementation(project(":messaging"))
 
     implementation("io.github.microutils:kotlin-logging:1.6.24")
     implementation("ch.qos.logback:logback-classic:1.2.3")
