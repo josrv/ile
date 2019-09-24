@@ -32,20 +32,20 @@ class RabbitMessagingClient : MessagingClient {
         connection.close()
     }
 
-    override fun send(exchange: String, message: ByteArray) {
-        channel.basicPublish(exchange, "", null, message)
+    override fun send(exchange: String, message: ByteArray, clientId: ClientId) {
+        channel.basicPublish(exchange, "", AMQP.BasicProperties.Builder().userId(clientId).build(), message)
     }
 
-    override fun <T : Message> registerReceiver(messageConfig: MessageConfig<T>, consumer: (T) -> Unit) {
+    override fun <T : Message> registerReceiver(messageConfig: MessageConfig<T>, consumer: (T, ClientId) -> Unit) {
         channel.basicConsume(messageConfig.queue, true, "client", object : DefaultConsumer(channel) {
             override fun handleDelivery(
                 consumerTag: String?,
                 envelope: Envelope?,
-                properties: AMQP.BasicProperties?,
+                properties: AMQP.BasicProperties,
                 body: ByteArray
             ) {
                 val message = messageConfig.mapper(body)
-                consumer(message)
+                consumer(message, properties.userId)
             }
         })
     }

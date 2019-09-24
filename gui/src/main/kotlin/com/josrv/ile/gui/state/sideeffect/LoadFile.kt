@@ -17,34 +17,34 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
 import java.nio.file.Files
 
-val LoadFile: (TextUtils) -> SideEffect = { textUtils ->
-    object : SideEffect {
-        override val name = "lookup"
+class LoadFile(
+    private val textUtils: TextUtils
+) : SideEffect {
+    override val name = "loadFile"
 
-        override fun CoroutineScope.start(
-            input: ReceiveChannel<IleAction>,
-            stateAccessor: StateAccessor<IleState>,
-            output: SendChannel<IleAction>,
-            logger: SideEffectLogger
-        ): Job = launch(Dispatchers.IO) {
-            for (action in input) {
-                if (action is IleAction.FileOpened) {
-                    val textContent = Files.readString(action.file)
-                    //TODO chunk into separate pages
-                    val page = Page.new(
-                        num = 1,
-                        tokens = textUtils.tokenize(textContent).mapIndexed { index, s ->
-                            Token(
-                                value = s,
-                                selected = false,
-                                index = index
-                            )
-                        }
-                    )
-                    val newText = Text.new(action.file, action.file.fileName.toString(), listOf(page))
-                    output.send(IleAction.FileLoaded(action.file, newText))
-                    output.send(IleAction.SelectText(newText))
-                }
+    override fun CoroutineScope.start(
+        input: ReceiveChannel<IleAction>,
+        stateAccessor: StateAccessor<IleState>,
+        output: SendChannel<IleAction>,
+        logger: SideEffectLogger
+    ): Job = launch(Dispatchers.IO) {
+        for (action in input) {
+            if (action is IleAction.FileOpened) {
+                val textContent = Files.readString(action.file)
+                //TODO chunk into separate pages
+                val page = Page.new(
+                    num = 1,
+                    tokens = textUtils.tokenize(textContent).mapIndexed { index, s ->
+                        Token(
+                            value = s,
+                            selected = false,
+                            index = index
+                        )
+                    }
+                )
+                val newText = Text.new(action.file, action.file.fileName.toString(), listOf(page))
+                output.send(IleAction.FileLoaded(action.file, newText))
+                output.send(IleAction.SelectText(newText))
             }
         }
     }

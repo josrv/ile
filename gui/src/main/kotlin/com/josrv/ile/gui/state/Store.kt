@@ -1,14 +1,21 @@
 package com.josrv.ile.gui.state
 
+import com.freeletics.coredux.LogEntry
+import com.freeletics.coredux.LogSink
 import com.freeletics.coredux.Reducer
 import com.freeletics.coredux.createStore
 import com.josrv.ile.common.msg.Definitions
 import com.josrv.ile.gui.state.data.Definition
 import com.josrv.ile.messaging.MessagingClient
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.actor
+import mu.KotlinLogging
 
 typealias Store = com.freeletics.coredux.Store<IleState, IleAction>
 typealias SideEffect = com.freeletics.coredux.SideEffect<IleState, IleAction>
+
+private val logger = KotlinLogging.logger {}
 
 fun createStore(
     initialState: IleState,
@@ -20,6 +27,15 @@ fun createStore(
         name = "Ile",
         initialState = initialState,
         sideEffects = listOf(dictionaryLookup, loadFile),
+        logSinks = listOf(
+            object : LogSink {
+                override val sink: SendChannel<LogEntry> = GlobalScope.actor {
+                    for (message in channel) {
+                        logger.trace { message }
+                    }
+                }
+            }
+        ),
         reducer = { currentState, newAction ->
             when (newAction) {
                 is IleAction.Select -> SelectReducer(currentState, newAction)
@@ -34,13 +50,14 @@ fun createStore(
         }
     ).apply {
         //TODO find a better place for this
-        messagingClient.registerReceiver(Definitions.config) { (value) ->
+        messagingClient.registerReceiver(Definitions.config) { (value), _ ->
             val definitions = value.map {
                 Definition(it.word, it.pos, it.value)
             }
 
             dispatch(IleAction.LookupResult(definitions))
         }
+
     }
 
 val NoOpReducer: Reducer<IleState, in IleAction> = { state, _ -> state }

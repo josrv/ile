@@ -6,7 +6,7 @@ import com.josrv.ile.gui.state.IleAction
 import com.josrv.ile.gui.state.IleState
 import com.josrv.ile.gui.state.data.Word
 
-val DictionaryLookup = { dictionaryService: DictionaryService ->
+fun DictionaryLookup(dictionaryService: DictionaryService) =
     SimpleSideEffect<IleState, IleAction>("dictionaryLookup") { state, action, logger, handler ->
         when (action) {
             is IleAction.Lookup -> handler {
@@ -18,4 +18,4 @@ val DictionaryLookup = { dictionaryService: DictionaryService ->
             else -> null
         }
     }
-}
+
