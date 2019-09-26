@@ -9,76 +9,67 @@ import com.josrv.ile.messaging.MessagingClient
 import com.josrv.ile.messaging.RabbitMessagingClient
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.map
 import java.net.URI
-import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
-import kotlin.coroutines.coroutineContext
 
 class LookupProvider {
     private lateinit var messagingClient: MessagingClient
 
-    private val jobs = ConcurrentHashMap<ClientId, Deferred<Definitions>>()
+    private val jobs = ConcurrentHashMap<ClientId, Job>()
 
     private val definitions = mapOf(
-        "have" to Definitions(listOf(
-            Definition("have", POS.VERB, "To possess, own, hold."),
-            Definition(
-                "have",
-                POS.VERB,
-                "To be related in some way to (with the object identifying the relationship)."
-            ),
-            Definition(
-                "have",
-                POS.VERB,
-                "To partake of a particular substance (especially a food or drink) or action."
+        "have" to Definitions(
+            listOf(
+                Definition("have", POS.VERB, "To possess, own, hold."),
+                Definition(
+                    "have",
+                    POS.VERB,
+                    "To be related in some way to (with the object identifying the relationship)."
+                ),
+                Definition(
+                    "have",
+                    POS.VERB,
+                    "To partake of a particular substance (especially a food or drink) or action."
+                )
             )
-        )),
-        "human" to Definitions(listOf(
-            Definition(
-                "human",
-                POS.NOUN,
-                "A human being, whether man, woman or child."
-            ),
-            Definition(
-                "human",
-                POS.ADJECTIVE,
-                "Of or belonging to the species Homo sapiens or its closest relatives. "
+        ),
+        "human" to Definitions(
+            listOf(
+                Definition(
+                    "human",
+                    POS.NOUN,
+                    "A human being, whether man, woman or child."
+                ),
+                Definition(
+                    "human",
+                    POS.ADJECTIVE,
+                    "Of or belonging to the species Homo sapiens or its closest relatives. "
+                )
             )
-        ))
+        )
     )
 
-    fun start() {
+    fun CoroutineScope.start() {
         messagingClient = RabbitMessagingClient()
         messagingClient.connect(URI("amqp://guest:guest@localhost:5672"))
 
         val readyDefinitions = Channel<Definitions>()
 
-        //TODO research and refactor
         messagingClient.registerReceiver(Word.config) { (word), clientId ->
-            val definitionsJob = jobs.compute(clientId) { c, u ->
-                u?.cancel()
+            jobs.compute("guest") { _, job ->
+                job?.cancel()
 
-                GlobalScope.async {
-                    try {
-                        delay(1000L)
-                        definitions.getOrElse(word) { Definitions(emptyList()) }
-                    } catch (e: CancellationException) {
-                        Definitions(emptyList())
-                    }
-                }
-            }
+                async {
+                    delay(1000L)
 
-            definitionsJob?.invokeOnCompletion {
-                val definitions = definitionsJob?.getCompleted()
-                GlobalScope.launch {
-                    readyDefinitions.send(definitions)
+                    val defs = definitions.getOrElse(word) { Definitions(emptyList()) }
+                    readyDefinitions.send(defs)
                 }
             }
         }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             for (def in readyDefinitions) {
                 messagingClient.send("definitions", Definitions.toBytes(def), "lookupProvider")
             }
@@ -90,7 +81,7 @@ class LookupProvider {
     }
 }
 
-fun main() {
+fun main() = runBlocking {
     val lookupProvider = LookupProvider().apply { start() }
 
     Runtime.getRuntime().addShutdownHook(thread(start = false) {

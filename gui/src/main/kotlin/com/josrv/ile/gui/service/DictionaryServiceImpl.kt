@@ -11,6 +11,6 @@ class DictionaryServiceImpl(
         //TODO extract dto conversion
         val message = com.josrv.ile.common.msg.Word(word.value, word.stemmed)
         val bytes = com.josrv.ile.common.msg.Word.toBytes(message)
-        messagingClient.send("words", bytes, App.ID)
+        messagingClient.send("words", bytes, "guest")
     }
 }
