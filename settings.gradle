@@ -7,4 +7,5 @@ include 'conduct'
 include 'common'
 include 'messaging'
 include 'lookup'
+include 'dict-client'
 

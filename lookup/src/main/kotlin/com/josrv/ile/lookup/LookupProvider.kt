@@ -57,11 +57,11 @@ class LookupProvider {
         val readyDefinitions = Channel<Definitions>()
 
         messagingClient.registerReceiver(Word.config) { (word), clientId ->
-            jobs.compute("guest") { _, job ->
+            jobs.compute(clientId) { _, job ->
                 job?.cancel()
 
                 async {
-                    delay(1000L)
+//                    delay(1000L)
 
                     val defs = definitions.getOrElse(word) { Definitions(emptyList()) }
                     readyDefinitions.send(defs)

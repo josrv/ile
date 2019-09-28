@@ -33,9 +33,15 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:1.6.24")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.slf4j:slf4j-api:1.7.26")
+
+    testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.2")
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+}
+
+val test by tasks.getting(Test::class) {
+    useJUnitPlatform { }
 }
